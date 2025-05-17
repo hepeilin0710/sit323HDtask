@@ -1,112 +1,68 @@
-# 打卡系统
+# Check-in Tracker System
 
-一个基于 Node.js 的简单打卡系统，帮助用户设定目标并进行每日打卡。
+This is a cloud-native web application built with Node.js, MongoDB, and vanilla HTML/CSS/JavaScript. It helps users set personal goals, check in daily, view progress, and visualize statistics. The system is fully deployed on Google Cloud Platform (GCP) using Docker and Kubernetes.
 
-## 功能特点
+---
 
-- 用户系统：简单的用户名注册和登录
-- 目标管理：添加、查看和删除目标
-- 打卡功能：每天对目标进行打卡，记录进度
-- 数据统计：展示打卡趋势、统计信息和完成率
-- 设置页面：修改用户基本信息
+##  Features
 
-## 技术栈
+- ✅ User authentication (register / login / logout)  
+- ✅ Goal management (create / delete / list goals)  
+- ✅ Daily check-in with duplicate prevention  
+- ✅ Progress visualization using Chart.js  
+- ✅ Daily streak and goal completion rate statistics  
+- ✅ **Leaderboard: display top 5 users ranked by check-in count**  
+- ✅ Profile management and editable settings page  
 
-- 后端：Node.js + Express
-- 数据库：MongoDB
-- 前端：原生 HTML + CSS + JavaScript
-- 图表：Chart.js
+---
 
-## 安装说明
+## ⚙️ Tech Stack
 
-1. 克隆项目：
-```bash
-git clone <repository-url>
-cd checkin-system
-```
+- **Backend**: Node.js + Express  
+- **Frontend**: HTML5 + CSS3 + JavaScript  
+- **Database**: MongoDB Atlas  
+- **Charts**: Chart.js  
+- **Cloud Platform**: Google Cloud Platform (GCP)  
+- **Containerization**: Docker  
+- **Orchestration**: Kubernetes (GKE)  
+- **Observability**: Cloud Logging + Monitoring  
 
-2. 安装依赖：
-```bash
-npm install
-```
+---
 
-3. 配置环境变量：
-创建 `.env` 文件并设置以下变量：
-```
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/checkin-system
-SESSION_SECRET=your-secret-key-here
-```
+## ☁️ Cloud Deployment (GCP)
 
-4. 启动服务器：
-```bash
-npm start
-```
+Tools and Services Used
+- **Node.js 18
+- **Docker + Docker Hub
+- **GCP Cloud Shell
+- **GCP Kubernetes Engine (GKE)
+- **MongoDB Atlas (hosted database)
+- **Cloud Logging + Monitoring
 
-5. 访问应用：
-打开浏览器访问 `http://localhost:3000`
+---
 
-## 项目结构
+## 🚀 Deployment Steps
 
-```
-checkin-system/
-├── server/
-│   ├── models/         # 数据模型
-│   ├── routes/         # 路由处理
-│   ├── public/         # 静态文件
-│   └── app.js          # 主应用文件
-├── .env               # 环境变量
-├── package.json       # 项目配置
-└── README.md         # 项目说明
-```
+1. Build Docker image locally
+docker build -t checkin-system .
 
-## API 接口
+2. Tag the image for Docker Hub
+docker tag checkin-system ygyunge/checkin-system
 
-### 认证接口
+3. Push the image to Docker Hub
+docker push ygyunge/checkin-system
 
-- POST `/api/auth/login` - 用户登录/注册
-- POST `/api/auth/logout` - 用户登出
-- GET `/api/auth/me` - 获取当前用户信息
-- POST `/api/auth/update` - 更新用户信息
+4. Create Kubernetes secret for environment variables
+kubectl create secret generic checkin-secrets \
+  --from-literal=MONGODB_URI="mongo-uri" \
+  --from-literal=SESSION_SECRET="secret"
 
-### 目标接口
+5. Apply the Kubernetes deployment and service definition
+kubectl apply -f deployment.yaml
 
-- GET `/api/goals` - 获取所有目标
-- POST `/api/goals` - 创建新目标
-- DELETE `/api/goals/:id` - 删除目标
-- GET `/api/goals/:id/checkin/today` - 检查今日打卡状态
-- POST `/api/goals/:id/checkin` - 进行打卡
-- GET `/api/goals/stats` - 获取统计数据
+6. Restart deployment to apply image and secret changes
+kubectl rollout restart deployment checkin-system
 
-## 页面路由
+7. Get external IP address for accessing the app
+kubectl get service
 
-- `/login` - 登录页面
-- `/dashboard` - 仪表板
-- `/goals` - 目标管理
-- `/checkin` - 每日打卡
-- `/report` - 数据统计
-- `/settings` - 设置页面
-
-## 开发说明
-
-- 开发模式启动：
-```bash
-npm run dev
-```
-
-- 生产模式启动：
-```bash
-npm start
-```
-
-## 贡献指南
-
-1. Fork 项目
-2. 创建特性分支
-3. 提交更改
-4. 推送到分支
-5. 创建 Pull Request
-
-## 许可证
-
-MIT 
