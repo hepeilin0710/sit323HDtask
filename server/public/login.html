@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - Check-in System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #eaf6ff 0%, #f5faff 100%);
+        }
+        .container {
+            background: #f0f6ff;
+            padding: 2.5rem 2rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 1.5rem;
+        }
+        .tab-switch {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2563eb;
+            padding: 0.5rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2.5px solid transparent;
+            transition: border 0.2s;
+        }
+        .tab-btn.active {
+            border-bottom: 2.5px solid #2563eb;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2563eb;
+        }
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1.5px solid #dbeafe;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            background: #f8fbff;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+            transition: background 0.2s;
+        }
+        button[type="submit"]:hover {
+            background: #1d4ed8;
+        }
+        .error {
+            color: #dc3545;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .success {
+            color: #22c55e;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check-in System</h1>
+        <div class="tab-switch">
+            <button class="tab-btn active" id="loginTabBtn" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn" id="registerTabBtn" onclick="switchTab('register')">Register</button>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+            <div id="loginError" class="error"></div>
+        </form>
+        <form id="registerForm" style="display:none;">
+            <div class="form-group">
+                <label for="register-username">Username</label>
+                <input type="text" id="register-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+            <div id="registerError" class="error"></div>
+            <div id="registerSuccess" class="success"></div>
+        </form>
+    </div>
+    <script>
+        function switchTab(tab) {
+            document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+            document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+            document.getElementById('loginTabBtn').classList.toggle('active', tab === 'login');
+            document.getElementById('registerTabBtn').classList.toggle('active', tab === 'register');
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('registerError').textContent = '';
+            document.getElementById('registerSuccess').textContent = '';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = '';
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                if (response.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    const data = await response.json();
+                    errorDiv.textContent = data.message || 'Login failed';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Server error, please try again later';
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                if (response.ok) {
+                    successDiv.textContent = 'Registration successful! You can now login.';
+                } else {
+                    const data = await response.json();
+                    errorDiv.textContent = data.message || 'Registration failed';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Server error, please try again later';
+            }
+        });
+    </script>
+</body>
+</html> 

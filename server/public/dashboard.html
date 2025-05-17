@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Check-in System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #eaf6ff 0%, #f5faff 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .welcome {
+            font-size: 2rem;
+            color: #2563eb;
+            font-weight: 700;
+        }
+        .nav-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .nav-item {
+            background: #f0f6ff;
+            padding: 2.5rem 1.5rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+            text-decoration: none;
+            color: #222;
+            transition: box-shadow 0.2s, transform 0.2s;
+            border: 1.5px solid #dbeafe;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .nav-item:hover {
+            box-shadow: 0 8px 32px rgba(37, 99, 235, 0.15);
+            transform: translateY(-4px) scale(1.03);
+        }
+        .nav-item h2 {
+            margin: 0 0 0.5rem 0;
+            color: #2563eb;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .nav-item p {
+            margin: 0;
+            color: #4b5563;
+            font-size: 1rem;
+        }
+        .logout-btn {
+            padding: 0.6rem 1.5rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="welcome">Welcome, <span id="username"></span></div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="nav-menu">
+            <a href="/goals" class="nav-item">
+                <h2>Set New Goal</h2>
+                <p>Add, view and manage your goals</p>
+            </a>
+            <a href="/checkin" class="nav-item">
+                <h2>Daily Check-In</h2>
+                <p>Record your daily progress</p>
+            </a>
+            <a href="/report" class="nav-item">
+                <h2>Monthly Report</h2>
+                <p>View check-in trends and statistics</p>
+            </a>
+            <a href="/leaderboard" class="nav-item">
+                <h2>Leaderboard</h2>
+                <p>Top 5 users by check-ins</p>
+            </a>
+            <a href="/settings" class="nav-item">
+                <h2>Settings</h2>
+                <p>Edit your profile</p>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        
+        async function getUserInfo() {
+            try {
+                const response = await fetch('/api/auth/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('username').textContent = data.username;
+                } else {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Failed to obtain user information:', error);
+            }
+        }
+
+        // logout
+        async function logout() {
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+       
+        getUserInfo();
+    </script>
+</body>
+</html> 

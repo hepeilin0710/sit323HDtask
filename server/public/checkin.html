@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Check-In - Check-in System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .back-btn {
+            padding: 0.5rem 1rem;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .back-btn:hover {
+            background-color: #5a6268;
+        }
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .goal-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .goal-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
+        .goal-description {
+            color: #666;
+            margin: 0 0 1rem 0;
+        }
+        .checkin-form {
+            margin-top: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        .checkin-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .checkin-btn:hover {
+            background-color: #218838;
+        }
+        .checkin-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .checkin-status {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .checked {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .not-checked {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Daily Check-In</h1>
+            <a href="/dashboard" class="back-btn">Back to Dashboard</a>
+        </div>
+
+        <div class="goals-grid" id="goalsGrid"></div>
+    </div>
+
+    <script>
+        // Pick list 
+        async function getGoals() {
+            try {
+                const response = await fetch('/api/goals');
+                if (response.ok) {
+                    const goals = await response.json();
+                    displayGoals(goals);
+                }
+            } catch (error) {
+                console.error('Failed to obtain target list:', error);
+            }
+        }
+
+        // show list
+        function displayGoals(goals) {
+            const goalsGrid = document.getElementById('goalsGrid');
+            goalsGrid.innerHTML = goals.map(goal => `
+                <div class="goal-card">
+                    <h3 class="goal-title">${goal.title}</h3>
+                    <p class="goal-description">${goal.description || 'No description'}</p>
+                    <div class="checkin-form">
+                        <div class="form-group">
+                            <label for="note-${goal._id}">Today's Note</label>
+                            <textarea id="note-${goal._id}" rows="3" placeholder="Write your progress today..."></textarea>
+                        </div>
+                        <button class="checkin-btn" onclick="checkin('${goal._id}')" id="btn-${goal._id}">
+                            Check In
+                        </button>
+                        <div class="checkin-status" id="status-${goal._id}"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Check today's clock-in status for each goal
+            goals.forEach(goal => checkTodayStatus(goal._id));
+        }
+
+        
+        async function checkTodayStatus(goalId) {
+            try {
+                const response = await fetch(`/api/goals/${goalId}/checkin/today`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const statusDiv = document.getElementById(`status-${goalId}`);
+                    const checkinBtn = document.getElementById(`btn-${goalId}`);
+                    
+                    if (data.checked) {
+                        statusDiv.className = 'checkin-status checked';
+                        statusDiv.textContent = 'Checked in today';
+                        checkinBtn.disabled = true;
+                    } else {
+                        statusDiv.className = 'checkin-status not-checked';
+                        statusDiv.textContent = 'Not checked in today';
+                        checkinBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                console.error('Checking the punch-in status failed:', error);
+            }
+        }
+
+        // check in
+        async function checkin(goalId) {
+            const note = document.getElementById(`note-${goalId}`).value;
+
+            try {
+                const response = await fetch(`/api/goals/${goalId}/checkin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ note })
+                });
+
+                if (response.ok) {
+                    checkTodayStatus(goalId);
+                    document.getElementById(`note-${goalId}`).value = '';
+                }
+            } catch (error) {
+                console.error('Failed to check in:', error);
+            }
+        }
+
+        
+        getGoals();
+    </script>
+</body>
+</html> 

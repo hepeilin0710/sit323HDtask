@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - Check-in System</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #eaf6ff 0%, #f5faff 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .back-btn {
+            padding: 0.6rem 1.5rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #1d4ed8;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #f0f6ff;
+            padding: 2rem 1.5rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+            text-align: center;
+            border: 1.5px solid #dbeafe;
+        }
+        .stat-value {
+            font-size: 2.2rem;
+            color: #2563eb;
+            margin: 0.5rem 0;
+            font-weight: 700;
+        }
+        .stat-label {
+            color: #4b5563;
+            margin: 0;
+        }
+        .chart-container {
+            background: #f0f6ff;
+            padding: 2rem 1.5rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+            margin-bottom: 2rem;
+            border: 1.5px solid #dbeafe;
+        }
+        .chart-title {
+            margin: 0 0 1rem 0;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .goals-list {
+            background: #f0f6ff;
+            padding: 2rem 1.5rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+            border: 1.5px solid #dbeafe;
+        }
+        .goal-item {
+            padding: 1.2rem 0.5rem;
+            border-bottom: 1px solid #e0e7ef;
+        }
+        .goal-item:last-child {
+            border-bottom: none;
+        }
+        .goal-title {
+            font-size: 1.2rem;
+            color: #2563eb;
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+        .goal-stats {
+            color: #4b5563;
+            margin: 0;
+        }
+        .leaderboard {
+            background: #f0f6ff;
+            padding: 2rem 1.5rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+            border: 1.5px solid #dbeafe;
+        }
+        .leaderboard h2 {
+            margin-bottom: 1rem;
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .leaderboard table {
+            width: 100%;
+            margin-top: 1rem;
+            background: #f0f6ff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.05);
+        }
+        .leaderboard table thead {
+            background: #dbeafe;
+        }
+        .leaderboard table thead th {
+            padding: 0.5rem;
+            color: #2563eb;
+            text-align: left;
+        }
+        .leaderboard table tbody {
+            background: #f0f6ff;
+        }
+        .leaderboard table tbody tr {
+            border-bottom: 1px solid #e0e7ef;
+        }
+        .leaderboard table tbody tr:last-child {
+            border-bottom: none;
+        }
+        .leaderboard table tbody td {
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Statistics</h1>
+            <a href="/dashboard" class="back-btn">Back to Dashboard</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Goals</h3>
+                <div class="stat-value" id="totalGoals">0</div>
+                <p class="stat-label">goals</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Check-Ins</h3>
+                <div class="stat-value" id="totalCheckins">0</div>
+                <p class="stat-label">check-ins</p>
+            </div>
+            <div class="stat-card">
+                <h3>Streak</h3>
+                <div class="stat-value" id="streak">0</div>
+                <p class="stat-label">days</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2 class="chart-title">Check-In Trend</h2>
+            <canvas id="trendChart"></canvas>
+        </div>
+
+        <div class="goals-list">
+            <h2>Goal Statistics</h2>
+            <div id="goalsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get statistics
+        async function getStats() {
+            try {
+                const response = await fetch('/api/goals/stats');
+                if (response.ok) {
+                    const stats = await response.json();
+                    updateStats(stats);
+                    updateChart(stats.trend);
+                    updateGoalsList(stats.goals);
+                }
+            } catch (error) {
+                console.error('Failed to get statistics:', error);
+            }
+        }
+
+        
+        function updateStats(stats) {
+            document.getElementById('totalGoals').textContent = stats.totalGoals;
+            document.getElementById('totalCheckins').textContent = stats.totalCheckins;
+            document.getElementById('streak').textContent = stats.streak;
+        }
+
+        
+        function updateChart(trendData) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trendData.labels,
+                    datasets: [{
+                        label: 'Daily check-in times',
+                        data: trendData.data,
+                        borderColor: '#007bff',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        
+        function updateGoalsList(goals) {
+            const goalsList = document.getElementById('goalsList');
+            goalsList.innerHTML = goals.map(goal => `
+                <div class="goal-item">
+                    <h3 class="goal-title">${goal.title}</h3>
+                    <p class="goal-stats">
+                        Total Check-Ins: ${goal.totalCheckins} |
+                        Streak: ${goal.streak} days |
+                        Completion Rate: ${goal.completionRate}%
+                    </p>
+                </div>
+            `).join('');
+        }
+
+        
+        getStats();
+    </script>
+</body>
+</html> 
