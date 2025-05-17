@@ -32,12 +32,12 @@ This is a cloud-native web application built with Node.js, MongoDB, and vanilla 
 ## ☁️ Cloud Deployment (GCP)
 
 Tools and Services Used
-- **Node.js 18
-- **Docker + Docker Hub
-- **GCP Cloud Shell
-- **GCP Kubernetes Engine (GKE)
-- **MongoDB Atlas (hosted database)
-- **Cloud Logging + Monitoring
+- **Node.js 18**
+- **Docker + Docker Hub**
+- **GCP Cloud Shell**
+- **GCP Kubernetes Engine (GKE)**
+- **MongoDB Atlas (hosted database)**
+- **Cloud Logging + Monitoring**
 
 ---
 
