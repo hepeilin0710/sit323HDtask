@@ -6,7 +6,9 @@ This is a cloud-native web application built with Node.js, MongoDB, and vanilla 
 
 ##  Features
 
-- ✅ User authentication (register / login / logout)  
+- ✅ User authentication (register / login / logout)
+  ![image](https://github.com/user-attachments/assets/fc7c872b-f1e5-4ce8-b42a-6778be1f1a5f)
+
 - ✅ Goal management (create / delete / list goals)  
 - ✅ Daily check-in with duplicate prevention  
 - ✅ Progress visualization using Chart.js  
