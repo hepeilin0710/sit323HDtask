@@ -8,8 +8,8 @@ This is a cloud-native web application built with Node.js, MongoDB, and vanilla 
 
 - ✅ User authentication (register / login / logout)
   ![image](https://github.com/user-attachments/assets/fc7c872b-f1e5-4ce8-b42a-6778be1f1a5f)
-
-- ✅ Goal management (create / delete / list goals)  
+  <img width="1176" alt="image" src="https://github.com/user-attachments/assets/dac55edf-4c12-4ee1-aa4c-21f950b66b9b" />
+- ✅ Goal management (create / delete / list goals)
 - ✅ Daily check-in with duplicate prevention  
 - ✅ Progress visualization using Chart.js  
 - ✅ Daily streak and goal completion rate statistics  
