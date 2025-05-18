@@ -10,11 +10,17 @@ This is a cloud-native web application built with Node.js, MongoDB, and vanilla 
   ![image](https://github.com/user-attachments/assets/fc7c872b-f1e5-4ce8-b42a-6778be1f1a5f)
   <img width="1176" alt="image" src="https://github.com/user-attachments/assets/dac55edf-4c12-4ee1-aa4c-21f950b66b9b" />
 - ✅ Goal management (create / delete / list goals)
-- ✅ Daily check-in with duplicate prevention  
-- ✅ Progress visualization using Chart.js  
-- ✅ Daily streak and goal completion rate statistics  
-- ✅ **Leaderboard: display top 5 users ranked by check-in count**  
+<img width="1173" alt="image" src="https://github.com/user-attachments/assets/3dba4b49-4446-4aa9-8167-cf1b9722b77c" />
+- ✅ Daily check-in 
+  <img width="1177" alt="image" src="https://github.com/user-attachments/assets/1cdb77ed-9ca6-41b6-8101-0b7ea765550d" />
+- ✅ Progress visualization using Chart.js
+  <img width="1256" alt="image" src="https://github.com/user-attachments/assets/c55f1b0c-c890-43bf-afdf-42775a17db7d" />
+- ✅ Daily streak and goal completion rate statistics
+  <img width="1191" alt="image" src="https://github.com/user-attachments/assets/1ed46ed0-b5b6-432c-b910-f7b7d781456d" />
+- ✅ **Leaderboard: display top 5 users ranked by check-in count**
+  <img width="893" alt="image" src="https://github.com/user-attachments/assets/ed593a9e-8569-47f2-b0a0-d00cdc6c7739" />
 - ✅ Profile management and editable settings page  
+  <img width="860" alt="image" src="https://github.com/user-attachments/assets/046523b6-77cb-45e5-a3f7-6d09b3bd4fef" />
 
 ---
 
